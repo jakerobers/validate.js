@@ -36,26 +36,26 @@ describe('validators.type', function() {
   });
 
   it("has a nice default message", function() {
-    expect(type(new Date(), {type: "string"}, "foo", {})).toBe("must be of type string");
-    expect(type("", {type: "object"}, "foo", {})).toBe("must be of type object");
-    expect(type({}, {type: "array"}, "foo", {})).toBe("must be of type array");
-    expect(type([], {type: "number"}, "foo", {})).toBe("must be of type number");
-    expect(type(1.1, {type: "integer"}, "foo", {})).toBe("must be of type integer");
-    expect(type(1, {type: "boolean"}, "foo", {})).toBe("must be of type boolean");
-    expect(type(true, {type: "date"}, "foo", {})).toBe("must be of type date");
+    expect(type(new Date(), {type: "string"}, "foo", {})).toEqual("must be of type string");
+    expect(type("", {type: "object"}, "foo", {})).toEqual("must be of type object");
+    expect(type({}, {type: "array"}, "foo", {})).toEqual("must be of type array");
+    expect(type([], {type: "number"}, "foo", {})).toEqual("must be of type number");
+    expect(type(1.1, {type: "integer"}, "foo", {})).toEqual("must be of type integer");
+    expect(type(1, {type: "boolean"}, "foo", {})).toEqual("must be of type boolean");
+    expect(type(true, {type: "date"}, "foo", {})).toEqual("must be of type date");
   });
 
   it("allows you to customize the error message", function() {
     validate.validators.type.message = "some message %{attribute}";
-    expect(type("", {type: "object"}, "foo", {})).toBe("some message foo");
+    expect(type("", {type: "object"}, "foo", {})).toEqual("some message foo");
     var options = {type: "object", message: "some other message %{attribute}"};
-    expect(type("", options, "foo", {})).toBe("some other message foo");
+    expect(type("", options, "foo", {})).toEqual("some other message foo");
   });
 
   it("allows functions as messages", function() {
     var message = function() { return "foo"; };
     var options = {type: "object", message: message};
-    expect(type("", options, "foo", {})).toBe("foo");
+    expect(type("", options, "foo", {})).toEqual("foo");
   });
 
   it("allows custom checks", function() {
@@ -64,13 +64,14 @@ describe('validators.type', function() {
     var options = {type: "custom"};
     var ret = false;
     validate.validators.type.types.custom = function(value, opts, attr, attrs, gopts) {
-      expect(value).toBe("value");
+      expect(value).toEqual("value");
       expect(opts).toEqual(options);
-      expect(attr).toBe("foo");
-      expect(attrs).toBe(attributes);
-      expect(gopts).toBe(globalOptions);
+      expect(attr).toEqual("foo");
+      expect(attrs).toEqual(attributes);
+      expect(gopts).toEqual(globalOptions);
       return ret;
     };
+    console.log(type("value", options, "foo", attributes, globalOptions));
     expect(type("value", options, "foo", attributes, globalOptions)).toEqual("must be of type custom");
     ret = true;
     expect(type("value", options, "foo", attributes, globalOptions)).not.toBeDefined();
@@ -82,11 +83,11 @@ describe('validators.type', function() {
     var value = "value";
     var options = {
       type: function(v, opts, attr, attrs, gopts) {
-        expect(v).toBe(value);
+        expect(v).toEqual(value);
         expect(opts).toEqual(options);
-        expect(attr).toBe("foo");
-        expect(attrs).toBe(attributes);
-        expect(gopts).toBe(globalOptions);
+        expect(attr).toEqual("foo");
+        expect(attrs).toEqual(attributes);
+        expect(gopts).toEqual(globalOptions);
         return value === "other";
       }
     };
@@ -103,11 +104,11 @@ describe('validators.type', function() {
     validate.validators.type.messages.custom = "my custom message";
     expect(type("value", options, "foo", globalOptions)).toEqual("my custom message");
     validate.validators.type.messages.custom = function(value, opts, attr, attrs, gopts) {
-      expect(value).toBe("value");
+      expect(value).toEqual("value");
       expect(opts).toEqual(options);
-      expect(attr).toBe("foo");
-      expect(attrs).toBe(attributes);
-      expect(gopts).toBe(globalOptions);
+      expect(attr).toEqual("foo");
+      expect(attrs).toEqual(attributes);
+      expect(gopts).toEqual(globalOptions);
       return "my other custom message";
     };
     expect(type("value", options, "foo", attributes, globalOptions)).toEqual("my other custom message");
