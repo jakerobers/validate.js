@@ -27,7 +27,7 @@ import * as Utils from './utils'
       , attr
       , validator;
 
-    if (results.some(function(r) { return v.isPromise(r.error); })) {
+    if (results.some(function(r) { return Utils.isPromise(r.error); })) {
       throw new Error("Use validate.async if you want support for promises");
     }
     return validate.processValidationResults(results, options);
@@ -88,7 +88,7 @@ import * as Utils from './utils'
         , validatorOptions
         , error;
 
-      if (v.isDomElement(attributes) || v.isJqueryElement(attributes)) {
+      if (v.isDomElement(attributes) || Utils.isJqueryElement(attributes)) {
         attributes = v.collectFormValues(attributes);
       }
 
@@ -207,7 +207,7 @@ import * as Utils from './utils'
       // Create a sequence of all the results starting with a resolved promise.
       return results.reduce(function(memo, result) {
         // If this result isn't a promise skip it in the sequence.
-        if (!v.isPromise(result.error)) {
+        if (!Utils.isPromise(result.error)) {
           return memo;
         }
 
@@ -235,8 +235,6 @@ import * as Utils from './utils'
       return value;
     },
 
-    ...Utils,
-
     isDomElement: function(o) {
       if (!o) {
         return false;
@@ -246,7 +244,7 @@ import * as Utils from './utils'
         return false;
       }
 
-      if (v.isObject(document) && o === document) {
+      if (Utils.isObject(document) && o === document) {
         return true;
       }
 
@@ -271,7 +269,7 @@ import * as Utils from './utils'
     // prefix it with % like this `Foo: %%{foo}` and it will be returned
     // as `"Foo: %{foo}"`
     format: v.extend(function(str, vals) {
-      if (!v.isString(str)) {
+      if (!Utils.isString(str)) {
         return str;
       }
       return str.replace(v.format.FORMAT_REGEXP, function(m0, m1, m2) {
@@ -290,7 +288,7 @@ import * as Utils from './utils'
     // Prettifying means replacing [.\_-] with spaces as well as splitting
     // camel case words.
     prettify: function(str) {
-      if (v.isNumber(str)) {
+      if (Utils.isNumber(str)) {
         // If there are more than 2 decimals round it to two
         if ((str * 100) % 1 === 0) {
           return "" + str;
@@ -299,12 +297,12 @@ import * as Utils from './utils'
         }
       }
 
-      if (v.isArray(str)) {
+      if (Utils.isArray(str)) {
         return str.map(function(s) { return v.prettify(s); }).join(", ");
       }
 
-      if (v.isObject(str)) {
-        if (!v.isDefined(str.toString)) {
+      if (Utils.isObject(str)) {
+        if (!Utils.isDefined(str.toString)) {
           return JSON.stringify(str);
         }
 
@@ -334,7 +332,7 @@ import * as Utils from './utils'
     },
 
     forEachKeyInKeypath: function(object, keypath, callback) {
-      if (!v.isString(keypath)) {
+      if (!Utils.isString(keypath)) {
         return undefined;
       }
 
@@ -374,12 +372,12 @@ import * as Utils from './utils'
     },
 
     getDeepObjectValue: function(obj, keypath) {
-      if (!v.isObject(obj)) {
+      if (!Utils.isObject(obj)) {
         return undefined;
       }
 
       return v.forEachKeyInKeypath(obj, keypath, function(obj, key) {
-        if (v.isObject(obj)) {
+        if (Utils.isObject(obj)) {
           return obj[key];
         }
       });
@@ -400,7 +398,7 @@ import * as Utils from './utils'
         , option
         , value;
 
-      if (v.isJqueryElement(form)) {
+      if (Utils.isJqueryElement(form)) {
         form = form[0];
       }
 
@@ -414,7 +412,7 @@ import * as Utils from './utils'
       for (i = 0; i < inputs.length; ++i) {
         input = inputs.item(i);
 
-        if (v.isDefined(input.getAttribute("data-ignored"))) {
+        if (Utils.isDefined(input.getAttribute("data-ignored"))) {
           continue;
         }
 
@@ -441,7 +439,7 @@ import * as Utils from './utils'
       inputs = form.querySelectorAll("select[name]");
       for (i = 0; i < inputs.length; ++i) {
         input = inputs.item(i);
-        if (v.isDefined(input.getAttribute("data-ignored"))) {
+        if (Utils.isDefined(input.getAttribute("data-ignored"))) {
           continue;
         }
 
@@ -464,7 +462,7 @@ import * as Utils from './utils'
     },
 
     sanitizeFormValue: function(value, options) {
-      if (options.trim && v.isString(value)) {
+      if (options.trim && Utils.isString(value)) {
         value = value.trim();
       }
 
@@ -492,7 +490,7 @@ import * as Utils from './utils'
       var ret = [];
       errors.forEach(function(error) {
         // Removes errors without a message
-        if (v.isArray(error.error)) {
+        if (Utils.isArray(error.error)) {
           error.error.forEach(function(msg) {
             ret.push(v.extend({}, error, {error: msg}));
           });
@@ -518,7 +516,7 @@ import * as Utils from './utils'
             errorInfo.attributes,
             errorInfo.globalOptions);
 
-        if (!v.isString(error)) {
+        if (!Utils.isString(error)) {
           ret.push(errorInfo);
           return;
         }
@@ -526,7 +524,7 @@ import * as Utils from './utils'
         if (error[0] === '^') {
           error = error.slice(1);
         } else if (options.fullMessages !== false) {
-          error = v.capitalize(prettify(errorInfo.attribute)) + " " + error;
+          error = Utils.capitalize(prettify(errorInfo.attribute)) + " " + error;
         }
         error = error.replace(/\\\^/g, "^");
         error = v.format(error, {
@@ -568,7 +566,7 @@ import * as Utils from './utils'
 
     cleanAttributes: function(attributes, whitelist) {
       function whitelistCreator(obj, key, last) {
-        if (v.isObject(obj[key])) {
+        if (Utils.isObject(obj[key])) {
           return obj[key];
         }
         return (obj[key] = last ? true : {});
@@ -588,7 +586,7 @@ import * as Utils from './utils'
       }
 
       function cleanRecursive(attributes, whitelist) {
-        if (!v.isObject(attributes)) {
+        if (!Utils.isObject(attributes)) {
           return attributes;
         }
 
@@ -599,7 +597,7 @@ import * as Utils from './utils'
         for (attribute in attributes) {
           w = whitelist[attribute];
 
-          if (v.isObject(w)) {
+          if (Utils.isObject(w)) {
             ret[attribute] = cleanRecursive(ret[attribute], w);
           } else if (!w) {
             delete ret[attribute];
@@ -608,7 +606,7 @@ import * as Utils from './utils'
         return ret;
       }
 
-      if (!v.isObject(whitelist) || !v.isObject(attributes)) {
+      if (!Utils.isObject(whitelist) || !Utils.isObject(attributes)) {
         return {};
       }
 
@@ -638,7 +636,7 @@ import * as Utils from './utils'
     },
     length: function(value, options, attribute) {
       // Empty values are allowed
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
 
@@ -653,26 +651,26 @@ import * as Utils from './utils'
 
       value = tokenizer(value);
       var length = value.length;
-      if(!v.isNumber(length)) {
+      if(!Utils.isNumber(length)) {
         return options.message || this.notValid || "has an incorrect length";
       }
 
       // Is checks
-      if (v.isNumber(is) && length !== is) {
+      if (Utils.isNumber(is) && length !== is) {
         err = options.wrongLength ||
           this.wrongLength ||
           "is the wrong length (should be %{count} characters)";
         errors.push(v.format(err, {count: is}));
       }
 
-      if (v.isNumber(minimum) && length < minimum) {
+      if (Utils.isNumber(minimum) && length < minimum) {
         err = options.tooShort ||
           this.tooShort ||
           "is too short (minimum is %{count} characters)";
         errors.push(v.format(err, {count: minimum}));
       }
 
-      if (v.isNumber(maximum) && length > maximum) {
+      if (Utils.isNumber(maximum) && length > maximum) {
         err = options.tooLong ||
           this.tooLong ||
           "is too long (maximum is %{count} characters)";
@@ -685,7 +683,7 @@ import * as Utils from './utils'
     },
     numericality: function(value, options, attribute, attributes, globalOptions) {
       // Empty values are fine
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
 
@@ -707,7 +705,7 @@ import * as Utils from './utils'
           v.prettify;
 
       // Strict will check that it is a valid looking number
-      if (v.isString(value) && options.strict) {
+      if (Utils.isString(value) && options.strict) {
         var pattern = "^-?(0|[1-9]\\d*)";
         if (!options.onlyInteger) {
           pattern += "(\\.\\d+)?";
@@ -724,12 +722,12 @@ import * as Utils from './utils'
       }
 
       // Coerce the value to a number unless we're being strict.
-      if (options.noStrings !== true && v.isString(value) && !Utils.isEmpty(value)) {
+      if (options.noStrings !== true && Utils.isString(value) && !Utils.isEmpty(value)) {
         value = +value;
       }
 
       // If it's not a number we shouldn't continue since it will compare it.
-      if (!v.isNumber(value)) {
+      if (!Utils.isNumber(value)) {
         return options.message ||
           options.notValid ||
           this.notValid ||
@@ -739,7 +737,7 @@ import * as Utils from './utils'
 
       // Same logic as above, sort of. Don't bother with comparisons if this
       // doesn't pass.
-      if (options.onlyInteger && !v.isInteger(value)) {
+      if (options.onlyInteger && !Utils.isInteger(value)) {
         return options.message ||
           options.notInteger ||
           this.notInteger ||
@@ -749,11 +747,11 @@ import * as Utils from './utils'
 
       for (name in checks) {
         count = options[name];
-        if (v.isNumber(count) && !checks[name](value, count)) {
+        if (Utils.isNumber(count) && !checks[name](value, count)) {
           // This picks the default message if specified
           // For example the greaterThan check uses the message from
           // this.notGreaterThan so we capitalize the name and prepend "not"
-          var key = "not" + v.capitalize(name);
+          var key = "not" + Utils.capitalize(name);
           var msg = options[key] ||
             this[key] ||
             this.message ||
@@ -784,12 +782,12 @@ import * as Utils from './utils'
       }
     },
     datetime: v.extend(function(value, options) {
-      if (!v.isFunction(this.parse) || !v.isFunction(this.format)) {
+      if (!Utils.isFunction(this.parse) || !Utils.isFunction(this.format)) {
         throw new Error("Both the parse and format functions needs to be set to use the datetime/date validator");
       }
 
       // Empty values are fine
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
 
@@ -837,7 +835,7 @@ import * as Utils from './utils'
       }
 
       if (errors.length) {
-        return v.unique(errors);
+        return Utils.unique(errors);
       }
     }, {
       parse: null,
@@ -848,7 +846,7 @@ import * as Utils from './utils'
       return v.validators.datetime.call(v.validators.datetime, value, options);
     },
     format: function(value, options) {
-      if (v.isString(options) || (options instanceof RegExp)) {
+      if (Utils.isString(options) || (options instanceof RegExp)) {
         options = {pattern: options};
       }
 
@@ -859,14 +857,14 @@ import * as Utils from './utils'
         , match;
 
       // Empty values are allowed
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
-      if (!v.isString(value)) {
+      if (!Utils.isString(value)) {
         return message;
       }
 
-      if (v.isString(pattern)) {
+      if (Utils.isString(pattern)) {
         pattern = new RegExp(options.pattern, options.flags);
       }
       match = pattern.exec(value);
@@ -876,14 +874,14 @@ import * as Utils from './utils'
     },
     inclusion: function(value, options) {
       // Empty values are fine
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
-      if (v.isArray(options)) {
+      if (Utils.isArray(options)) {
         options = {within: options};
       }
       options = v.extend({}, this.options, options);
-      if (v.contains(options.within, value)) {
+      if (Utils.contains(options.within, value)) {
         return;
       }
       var message = options.message ||
@@ -893,18 +891,18 @@ import * as Utils from './utils'
     },
     exclusion: function(value, options) {
       // Empty values are fine
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
-      if (v.isArray(options)) {
+      if (Utils.isArray(options)) {
         options = {within: options};
       }
       options = v.extend({}, this.options, options);
-      if (!v.contains(options.within, value)) {
+      if (!Utils.contains(options.within, value)) {
         return;
       }
       var message = options.message || this.message || "^%{value} is restricted";
-      if (v.isString(options.within[value])) {
+      if (Utils.isString(options.within[value])) {
         value = options.within[value];
       }
       return v.format(message, {value: value});
@@ -913,10 +911,10 @@ import * as Utils from './utils'
       options = v.extend({}, this.options, options);
       var message = options.message || this.message || "is not a valid email";
       // Empty values are fine
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
-      if (!v.isString(value)) {
+      if (!Utils.isString(value)) {
         return message;
       }
       if (!this.PATTERN.exec(value)) {
@@ -926,11 +924,11 @@ import * as Utils from './utils'
       PATTERN: /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i
     }),
     equality: function(value, options, attribute, attributes, globalOptions) {
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
 
-      if (v.isString(options)) {
+      if (Utils.isString(options)) {
         options = {attribute: options};
       }
       options = v.extend({}, this.options, options);
@@ -938,7 +936,7 @@ import * as Utils from './utils'
         this.message ||
         "is not equal to %{attribute}";
 
-      if (Utils.isEmpty(options.attribute) || !v.isString(options.attribute)) {
+      if (Utils.isEmpty(options.attribute) || !Utils.isString(options.attribute)) {
         throw new Error("The attribute must be a non empty string");
       }
 
@@ -957,7 +955,7 @@ import * as Utils from './utils'
     // A URL validator that is used to validate URLs with the ability to
     // restrict schemes and some domains.
     url: function(value, options) {
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
 
@@ -967,7 +965,7 @@ import * as Utils from './utils'
         , schemes = options.schemes || this.schemes || ['http', 'https']
         , allowLocal = options.allowLocal || this.allowLocal || false
         , allowDataUrl = options.allowDataUrl || this.allowDataUrl || false;
-      if (!v.isString(value)) {
+      if (!Utils.isString(value)) {
         return message;
       }
 
@@ -1029,29 +1027,29 @@ import * as Utils from './utils'
       }
     },
     type: v.extend(function(value, originalOptions, attribute, attributes, globalOptions) {
-      if (v.isString(originalOptions)) {
+      if (Utils.isString(originalOptions)) {
         originalOptions = {type: originalOptions};
       }
 
-      if (!v.isDefined(value)) {
+      if (!Utils.isDefined(value)) {
         return;
       }
 
       var options = v.extend({}, this.options, originalOptions);
 
       var type = options.type;
-      if (!v.isDefined(type)) {
+      if (!Utils.isDefined(type)) {
         throw new Error("No type was specified");
       }
 
       var check;
-      if (v.isFunction(type)) {
+      if (Utils.isFunction(type)) {
         check = type;
       } else {
         check = this.types[type];
       }
 
-      if (!v.isFunction(check)) {
+      if (!Utils.isFunction(check)) {
         throw new Error("validate.validators.type.types." + type + " must be a function.");
       }
 
@@ -1060,9 +1058,9 @@ import * as Utils from './utils'
           this.messages[type] ||
           this.message ||
           options.message ||
-          (v.isFunction(type) ? "must be of the correct type" : "must be of type %{type}");
+          (Utils.isFunction(type) ? "must be of the correct type" : "must be of type %{type}");
 
-        if (v.isFunction(message)) {
+        if (Utils.isFunction(message)) {
           message = message(value, originalOptions, attribute, attributes, globalOptions);
         }
 
@@ -1071,14 +1069,14 @@ import * as Utils from './utils'
     }, {
       types: {
         object: function(value) {
-          return v.isObject(value) && !v.isArray(value);
+          return Utils.isObject(value) && !Utils.isArray(value);
         },
-        array: v.isArray,
-        integer: v.isInteger,
-        number: v.isNumber,
-        string: v.isString,
-        date: v.isDate,
-        boolean: v.isBoolean
+        array: Utils.isArray,
+        integer: Utils.isInteger,
+        number: Utils.isNumber,
+        string: Utils.isString,
+        date: Utils.isDate,
+        boolean: Utils.isBoolean
       },
       messages: {}
     })
