@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import sinon from 'sinon'
 import * as Utils from '../src/utils'
 
 describe('Utils.isNumber', () => {
@@ -244,6 +245,43 @@ describe('Utils.isEmpty', () => {
   it('is non-empty for an object with at least one attribute', () => {
     const res = Utils.isEmpty({foo: 'bar'})
     expect(res).to.equal(false)
+  })
+
+  it('is false otherwise', () => {
+    const res = Utils.isEmpty(0)
+    expect(res).to.equal(false)
+  })
+})
+
+describe('Utils.warn', () => {
+  it('logs a message', () => {
+    const logger = sinon.spy()
+    const warnLogger = Utils.warn({ warn: logger })
+    warnLogger('Msg')
+    expect(logger).to.have.property('callCount', 1)
+  })
+
+  it('ignores for loggers without warn', () => {
+    const logger = sinon.spy()
+    const warnLogger = Utils.warn(logger)
+    warnLogger('Msg')
+    expect(logger).to.have.property('callCount', 0)
+  })
+})
+
+describe('Utils.error', () => {
+  it('logs a message', () => {
+    const logger = sinon.spy()
+    const errorLogger = Utils.error({ error: logger })
+    errorLogger('Msg')
+    expect(logger).to.have.property('callCount', 1)
+  })
+
+  it('ignores for loggers without error', () => {
+    const logger = sinon.spy()
+    const errorLogger = Utils.error(errorLogger)
+    errorLogger('Msg')
+    expect(logger).to.have.property('callCount', 0)
   })
 })
 

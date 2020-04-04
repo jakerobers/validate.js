@@ -118,15 +118,19 @@ export function isArray(value) {
   return {}.toString.call(value) === '[object Array]';
 }
 
-export function warn(msg) {
-  if (typeof console !== "undefined" && console.warn) {
-    console.warn("[validate.js] " + msg);
+export function warn(logger) {
+  return function(msg) {
+    if (typeof logger !== "undefined" && logger.warn) {
+      logger.warn("[validate.js] " + msg);
+    }
   }
 }
 
-export function error(msg) {
-  if (typeof console !== "undefined" && console.error) {
-    console.error("[validate.js] " + msg);
+export function error(logger) {
+  return function(msg) {
+    if (typeof logger !== "undefined" && logger.error) {
+      logger.error("[validate.js] " + msg);
+    }
   }
 }
 
