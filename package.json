@@ -49,5 +49,8 @@
     ],
     "plugins": []
   },
+  "standard": {
+    "globals": [ "describe", "it" ]
+  },
   "license": "MIT"
 }

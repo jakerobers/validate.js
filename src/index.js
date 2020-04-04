@@ -58,7 +58,7 @@ import * as Utils from './utils'
       metadata: "development",
       toString: function() {
         var version = v.format("%{major}.%{minor}.%{patch}", v.version);
-        if (!v.isEmpty(v.version.metadata)) {
+        if (!Utils.isEmpty(v.version.metadata)) {
           version += "+" + v.version.metadata;
         }
         return version;
@@ -155,7 +155,7 @@ import * as Utils from './utils'
         throw new Error(v.format("Unknown format %{format}", options));
       }
 
-      return v.isEmpty(errors) ? undefined : errors;
+      return Utils.isEmpty(errors) ? undefined : errors;
     },
 
     // Runs the validations with support for promises.
@@ -261,45 +261,6 @@ import * as Utils from './utils'
           o.nodeType === 1 &&
           typeof o.nodeName === "string";
       }
-    },
-
-    isEmpty: function(value) {
-      var attr;
-
-      // Null and undefined are empty
-      if (!v.isDefined(value)) {
-        return true;
-      }
-
-      // functions are non empty
-      if (v.isFunction(value)) {
-        return false;
-      }
-
-      // Whitespace only strings are empty
-      if (v.isString(value)) {
-        return v.EMPTY_STRING_REGEXP.test(value);
-      }
-
-      // For arrays we use the length property
-      if (v.isArray(value)) {
-        return value.length === 0;
-      }
-
-      // Dates have no attributes but aren't empty
-      if (v.isDate(value)) {
-        return false;
-      }
-
-      // If we find at least one property we consider it non empty
-      if (v.isObject(value)) {
-        for (attr in value) {
-          return false;
-        }
-        return true;
-      }
-
-      return false;
     },
 
     // Formats the specified strings with the given values like so:
@@ -516,7 +477,7 @@ import * as Utils from './utils'
     // Remove all errors who's error attribute is empty (null or undefined)
     pruneEmptyErrors: function(errors) {
       return errors.filter(function(error) {
-        return !v.isEmpty(error.error);
+        return !Utils.isEmpty(error.error);
       });
     },
 
@@ -668,27 +629,12 @@ import * as Utils from './utils'
         }
       }
     },
-
-    warn: function(msg) {
-      if (typeof console !== "undefined" && console.warn) {
-        console.warn("[validate.js] " + msg);
-      }
-    },
-
-    error: function(msg) {
-      if (typeof console !== "undefined" && console.error) {
-        console.error("[validate.js] " + msg);
-      }
-    }
   });
 
   validate.validators = {
     // Presence validates that the value isn't empty
     presence: function(value, options) {
       options = v.extend({}, this.options, options);
-      if (options.allowEmpty !== false ? !v.isDefined(value) : v.isEmpty(value)) {
-        return options.message || this.message || "can't be blank";
-      }
     },
     length: function(value, options, attribute) {
       // Empty values are allowed
@@ -778,7 +724,7 @@ import * as Utils from './utils'
       }
 
       // Coerce the value to a number unless we're being strict.
-      if (options.noStrings !== true && v.isString(value) && !v.isEmpty(value)) {
+      if (options.noStrings !== true && v.isString(value) && !Utils.isEmpty(value)) {
         value = +value;
       }
 
@@ -992,7 +938,7 @@ import * as Utils from './utils'
         this.message ||
         "is not equal to %{attribute}";
 
-      if (v.isEmpty(options.attribute) || !v.isString(options.attribute)) {
+      if (Utils.isEmpty(options.attribute) || !v.isString(options.attribute)) {
         throw new Error("The attribute must be a non empty string");
       }
 

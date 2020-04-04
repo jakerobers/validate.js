@@ -1,3 +1,5 @@
+export const EMPTY_STRING_REGEXP = /^\s*$/
+
 export function isInteger(value) {
   return isNumber(value) && value % 1 === 0;
 };
@@ -12,6 +14,45 @@ export function isPromise(value) {
 
 export function isHash(value) {
   return isObject(value) && !isArray(value) && !isFunction(value);
+}
+
+export function isEmpty(value) {
+  let attr;
+
+  // Null and undefined are empty
+  if (!isDefined(value)) {
+    return true;
+  }
+
+  // functions are non empty
+  if (isFunction(value)) {
+    return false;
+  }
+
+  // Whitespace only strings are empty
+  if (isString(value)) {
+    return EMPTY_STRING_REGEXP.test(value);
+  }
+
+  // For arrays we use the length property
+  if (isArray(value)) {
+    return value.length === 0;
+  }
+
+  // Dates have no attributes but aren't empty
+  if (isDate(value)) {
+    return false;
+  }
+
+  // If we find at least one property we consider it non empty
+  if (isObject(value)) {
+    for (attr in value) {
+      return false;
+    }
+    return true;
+  }
+
+  return false;
 }
 
 export function isFunction(value) {
@@ -77,3 +118,14 @@ export function isArray(value) {
   return {}.toString.call(value) === '[object Array]';
 }
 
+export function warn(msg) {
+  if (typeof console !== "undefined" && console.warn) {
+    console.warn("[validate.js] " + msg);
+  }
+}
+
+export function error(msg) {
+  if (typeof console !== "undefined" && console.error) {
+    console.error("[validate.js] " + msg);
+  }
+}

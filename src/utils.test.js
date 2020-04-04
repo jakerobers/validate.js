@@ -195,3 +195,55 @@ describe('Utils.capitalize', () => {
   })
 })
 
+describe('Utils.isEmpty', () => {
+  it('is empty for undefined', () => {
+    const res = Utils.isEmpty(undefined)
+    expect(res).to.equal(true)
+  })
+
+  it('is empty for null', () => {
+    const res = Utils.isEmpty(null)
+    expect(res).to.equal(true)
+  })
+
+  it('is non-empty for functions', () => {
+    const res = Utils.isEmpty(() => {})
+    expect(res).to.equal(false)
+  })
+
+  it('is empty for whitespace-only strings', () => {
+    const res = Utils.isEmpty('       ')
+    expect(res).to.equal(true)
+  })
+
+  it('is non-empty for non-whitespace, non-blank strings', () => {
+    const res = Utils.isEmpty('foo')
+    expect(res).to.equal(false)
+  })
+
+  it('is empty for an empty array', () => {
+    const res = Utils.isEmpty([])
+    expect(res).to.equal(true)
+  })
+
+  it('is non-empty for a filled array', () => {
+    const res = Utils.isEmpty([1])
+    expect(res).to.equal(false)
+  })
+
+  it('is non-empty for a date', () => {
+    const res = Utils.isEmpty(new Date())
+    expect(res).to.equal(false)
+  })
+
+  it('is empty for an object without attributes', () => {
+    const res = Utils.isEmpty({})
+    expect(res).to.equal(true)
+  })
+
+  it('is non-empty for an object with at least one attribute', () => {
+    const res = Utils.isEmpty({foo: 'bar'})
+    expect(res).to.equal(false)
+  })
+})
+
