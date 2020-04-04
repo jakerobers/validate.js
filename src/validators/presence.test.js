@@ -32,3 +32,4 @@ describe('presence', () => {
     expect(err).to.equal('can\'t be blank')
   })
 })
+

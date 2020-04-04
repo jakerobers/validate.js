@@ -7,6 +7,7 @@
  * http://validatejs.org/
  */
 import * as Utils from './utils'
+import validators from './validators'
 
 (function(exports, module, define) {
   "use strict";
@@ -630,10 +631,7 @@ import * as Utils from './utils'
   });
 
   validate.validators = {
-    // Presence validates that the value isn't empty
-    presence: function(value, options) {
-      options = v.extend({}, this.options, options);
-    },
+    presence: validators.presence,
     length: function(value, options, attribute) {
       // Empty values are allowed
       if (!Utils.isDefined(value)) {

@@ -129,3 +129,4 @@ export function error(msg) {
     console.error("[validate.js] " + msg);
   }
 }
+
